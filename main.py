@@ -15,6 +15,7 @@ while running:
             running = False
     molecules.draw_particles(screen)
     molecules.move_particles()
+    molecules.bounce_off_the_wall(screen)
     pg.display.update()
 
 pg.quit()

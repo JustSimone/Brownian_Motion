@@ -15,6 +15,7 @@ def speed_generator():
         c = np.sqrt(x*x+y*y)
     return [x,y]
 
+# Molecule class, defining what a molecule object is giving it a momentum and a initial position
 class Molecule:
     def __init__(self, fScreen, fIndex):
         x_size, y_size = fScreen.get_size()
@@ -39,7 +40,7 @@ class Molecule:
     def get_yvelocity(self):
         return self.v_y
 
-
+# Molecules class, defining a set of molecules interacting and moving together
 class Molecules:
     def __init__(self, N, fScreen):
         self.number_of_molecules = N
@@ -56,6 +57,15 @@ class Molecules:
     def move_particles(self):
         for i in range(self.number_of_molecules):
             v = self.molecules[i].get_velocity()
-            self.molecules[i].shape = pg.Rect.move(self.molecules[i].shape, v[0], v[1])
+            self.molecules[i].shape = pg.Rect.move(self.molecules[i].shape, 2*v[0], 2*v[1])
 
-    def bouce_off_the_wall(self, fScreen):
+    def bounce_off_the_wall(self, fScreen):
+        x_size, y_size = fScreen.get_size()
+
+        for i in range(self.number_of_molecules):
+            x = self.molecules[i].shape.x
+            y = self.molecules[i].shape.y
+            if (x<0 or x>x_size):
+                self.molecules[i].v_x = - self.molecules[i].get_xvelocity()
+            if (y<0 or y>y_size):
+                self.molecules[i].v_y = - self.molecules[i].get_yvelocity()

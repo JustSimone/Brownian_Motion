@@ -3,3 +3,6 @@
 
 # Remove prova.py file, used for tests
 prova.py
+
+# Remove cache folder
+__pycache__
