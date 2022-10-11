@@ -1,0 +1,5 @@
+# Removing DS_Store files
+.DS_Store
+
+# Remove prova.py file, used for tests
+prova.py
