@@ -10,8 +10,8 @@ def speed_generator():
     c = 0
 
     while (c < 0.999) or (c > 1.001):
-        x = rnd.random()
-        y = rnd.random()
+        x = rnd.uniform(-1., 1)
+        y = rnd.uniform(-1., 1)
         c = np.sqrt(x*x+y*y)
     return [x,y]
 
@@ -30,7 +30,7 @@ class Molecule:
         self.shape = pg.rect.Rect(x,y, 2,2)
         self.index = fIndex
 
-    # Getter methods
+    # Getter Methods
     def get_velocity(self):
         return self.velocity
 
@@ -39,6 +39,13 @@ class Molecule:
 
     def get_yvelocity(self):
         return self.v_y
+
+    # Setter Methods
+    def set_xvelocity(self, new_vx):
+        self.v_x = new_vx
+
+    def set_yvelocity(self, new_vy):
+        self.v_y = new_vy
 
 # Molecules class, defining a set of molecules interacting and moving together
 class Molecules:
@@ -57,7 +64,7 @@ class Molecules:
     def move_particles(self):
         for i in range(self.number_of_molecules):
             v = self.molecules[i].get_velocity()
-            self.molecules[i].shape = pg.Rect.move(self.molecules[i].shape, 2*v[0], 2*v[1])
+            self.molecules[i].shape = pg.Rect.move(self.molecules[i].shape, 1.5*v[0], 1.5*v[1])
 
     def bounce_off_the_wall(self, fScreen):
         x_size, y_size = fScreen.get_size()
@@ -65,7 +72,7 @@ class Molecules:
         for i in range(self.number_of_molecules):
             x = self.molecules[i].shape.x
             y = self.molecules[i].shape.y
-            if (x<0 or x>x_size):
-                self.molecules[i].v_x = - self.molecules[i].get_xvelocity()
-            if (y<0 or y>y_size):
-                self.molecules[i].v_y = - self.molecules[i].get_yvelocity()
+            if x<0 or x>500:
+                self.molecules[i].set_xvelocity(-self.molecules[i].get_xvelocity())
+            if y<0 or y>500:
+                self.molecules[i].set_yvelocity(-self.molecules[i].get_yvelocity())
