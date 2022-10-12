@@ -61,18 +61,17 @@ class Molecules:
         for i in range(self.number_of_molecules):
             pg.draw.circle(fScreen, (255, 255, 255), self.molecules[i].shape.center, self.mass)
 
-    def move_particles(self):
+    def move_particles(self, fScreen):
         for i in range(self.number_of_molecules):
             v = self.molecules[i].get_velocity()
             self.molecules[i].shape = pg.Rect.move(self.molecules[i].shape, 1.5*v[0], 1.5*v[1])
 
-    def bounce_off_the_wall(self, fScreen):
-        x_size, y_size = fScreen.get_size()
+            x_size, y_size = fScreen.get_size()
 
-        for i in range(self.number_of_molecules):
             x = self.molecules[i].shape.x
             y = self.molecules[i].shape.y
-            if x<0 or x>500:
+
+            if x<10 or x>50:
                 self.molecules[i].set_xvelocity(-self.molecules[i].get_xvelocity())
-            if y<0 or y>500:
+            if y<10 or y>50:
                 self.molecules[i].set_yvelocity(-self.molecules[i].get_yvelocity())
