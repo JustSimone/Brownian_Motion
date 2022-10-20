@@ -1,5 +1,7 @@
 import numpy as np
 import pygame as pg
+from pygame import math
+import numpy as np
 import random as rnd
 
 # Generator of the velocity of the particles, all with different direction,
@@ -7,13 +9,10 @@ import random as rnd
 def speed_generator():
     vx = 0
     vy = 0
-    c = 0
-
-    while (c < 0.999) or (c > 1.001):
-        x = rnd.uniform(-1., 1)
-        y = rnd.uniform(-1., 1)
-        c = np.sqrt(x*x+y*y)
-    return [x,y]
+    theta = 1*np.pi*rnd.random()
+    vx = np.sin(theta)
+    vy = np.cos(theta)
+    return [vx,vy]
 
 # Molecule class, defining what a molecule object is giving it a momentum and a initial position
 class Molecule:
@@ -24,8 +23,6 @@ class Molecule:
 
         velocity = speed_generator()
         self.velocity = velocity
-        self.v_x = velocity[0]
-        self.v_y = velocity[1]
 
         self.shape = pg.rect.Rect(x,y, 2,2)
         self.index = fIndex
@@ -35,17 +32,17 @@ class Molecule:
         return self.velocity
 
     def get_xvelocity(self):
-        return self.v_x
+        return self.velocity[0]
 
     def get_yvelocity(self):
-        return self.v_y
+        return self.velocity[1]
 
     # Setter Methods
     def set_xvelocity(self, new_vx):
-        self.v_x = new_vx
+        self.velocity[0] = new_vx
 
     def set_yvelocity(self, new_vy):
-        self.v_y = new_vy
+        self.velocity[1] = new_vy
 
 # Molecules class, defining a set of molecules interacting and moving together
 class Molecules:
@@ -64,14 +61,14 @@ class Molecules:
     def move_particles(self, fScreen):
         for i in range(self.number_of_molecules):
             v = self.molecules[i].get_velocity()
-            self.molecules[i].shape = pg.Rect.move(self.molecules[i].shape, 1.5*v[0], 1.5*v[1])
+            self.molecules[i].shape = self.molecules[i].shape.move(1.5*v[0], 1.5*v[1])
 
             x_size, y_size = fScreen.get_size()
 
             x = self.molecules[i].shape.x
             y = self.molecules[i].shape.y
 
-            if x<10 or x>50:
+            if x<0 or x>x_size:
                 self.molecules[i].set_xvelocity(-self.molecules[i].get_xvelocity())
-            if y<10 or y>50:
+            if y<0 or y>y_size:
                 self.molecules[i].set_yvelocity(-self.molecules[i].get_yvelocity())

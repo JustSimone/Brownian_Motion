@@ -4,7 +4,7 @@ from classes import molecule
 pg.init()
 screen = pg.display.set_mode([500, 500])
 running = True
-num_mol = 10
+num_mol = 1000
 
 molecules = molecule.Molecules(num_mol, screen)
 
