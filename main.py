@@ -4,9 +4,10 @@ from classes import molecule
 pg.init()
 screen = pg.display.set_mode([500, 500])
 running = True
-num_mol = 1000
+num_mol = 100
+mass = 1
 
-molecules = molecule.Molecules(num_mol, screen)
+molecules = molecule.Molecules(num_mol, screen, mass)
 
 print(screen.get_size())
 while running:
@@ -16,7 +17,7 @@ while running:
             running = False
     molecules.draw_particles(screen)
     molecules.move_particles(screen)
-    pg.time.delay(50)
+    #pg.time.delay(25)
     pg.display.update()
 
 pg.quit()
