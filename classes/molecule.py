@@ -38,14 +38,16 @@ def bouncing_speed(m1, m2, v1, v2, r1, r2):
 
 # Molecule class, defining what a molecule object is giving it a momentum and a initial position
 class Molecule:
+    # Class variables theta, velocity, shape, index
     def __init__(self, fScreen, fIndex, mass):
         x_size, y_size = fScreen.get_size()
         x = rnd.randrange(1 + mass, x_size - mass)
         y = rnd.randrange(1 + mass, y_size - mass)
 
-        self.theta = 1*np.pi*rnd.random()
-        vx = np.sin(self.theta)
-        vy = np.cos(self.theta)
+        self.mass_partice = mass
+        self.theta = rnd.uniform(0, 2*np.pi)
+        vx = np.cos(self.theta)
+        vy = np.sin(self.theta)
 
         self.velocity = [vx, vy]
 
@@ -69,8 +71,26 @@ class Molecule:
     def set_yvelocity(self, new_vy):
         self.velocity[1] = new_vy
 
+    #Draw a Particle
+    def draw_a_particle(self, fScreen):
+        pg.draw.circle(fScreen, (255, 255, 255), self.shape.center, self.mass_partice)
+    def move_a_particle(self, fScreen):
+        v = self.velocity
+        self.shape = self.shape.move(1.5*v[0], 1.5*v[1])
+
+        x_size, y_size = fScreen.get_size()
+
+        x = self.shape.x
+        y = self.shape.y
+        #Bouncing off the wall
+        if x<0+self.mass_partice or x>x_size-self.mass_partice:
+            self.velocity[0] = -self.velocity[0]
+        if y<0+self.mass_partice or y>y_size-self.mass_partice:
+            self.velocity[1] = -self.velocity[1]
+
 # Molecules class, defining a set of molecules interacting and moving together
 class Molecules:
+    # Class variables number_of_molecules, mass, molecules
     def __init__(self, N, fScreen, mass):
         self.number_of_molecules = N
         self.mass = mass
@@ -80,7 +100,24 @@ class Molecules:
             self.molecules.append(molecule)
 
     #Molecules Functions
-
+    def bounce(self):
+        mass_1 = self.mass
+        mass_2 = mass_1
+        radius2 = self.mass * self.mass
+        N = self.number_of_molecules
+        for i in range(N):
+            molecule_position = self.molecules[i].shape.center
+            molecule_velocity = self.molecules[i].get_velocity()
+            for j in range(N):
+                if i != j:
+                    other_molecule_position = self.molecules[j].shape.center
+                    other_molecule_velocity = self.molecules[j].get_velocity()
+                    distance2 = (molecule_position[0] - other_molecule_position[0])*(molecule_position[0] - other_molecule_position[0]) + (molecule_position[1] - other_molecule_position[1])*(molecule_position[1] - other_molecule_position[1])
+                    if distance2 < 4*radius2:
+                        new_velocity = bouncing_speed(mass_1, mass_2, molecule_velocity, other_molecule_velocity, molecule_position, other_molecule_position)
+                        self.molecules[i].set_velocity(new_velocity[0])
+                        self.molecules[j].set_velocity(new_velocity[1])
+                        break
     def draw_particles(self, fScreen):
         for i in range(self.number_of_molecules):
             pg.draw.circle(fScreen, (255, 255, 255), self.molecules[i].shape.center, self.mass)
@@ -98,22 +135,3 @@ class Molecules:
                 self.molecules[i].set_xvelocity(-self.molecules[i].get_xvelocity())
             if y<0+self.mass or y>y_size-self.mass:
                 self.molecules[i].set_yvelocity(-self.molecules[i].get_yvelocity())
-
-            #Particle collisions
-            mass_1 = self.mass
-            mass_2 = mass_1
-            radius2 = self.mass * self.mass
-            N = self.number_of_molecules
-            for i in range(N):
-                molecule_position = self.molecules[i].shape.center
-                molecule_velocity = self.molecules[i].get_velocity()
-                for j in range(N):
-                    if i != j:
-                        other_molecule_position = self.molecules[j].shape.center
-                        other_molecule_velocity = self.molecules[j].get_velocity()
-                        distance2 = (molecule_position[0] - other_molecule_position[0])*(molecule_position[0] - other_molecule_position[0]) + (molecule_position[1] - other_molecule_position[1])*(molecule_position[1] - other_molecule_position[1])
-                        if distance2 < 4*radius2:
-                            new_velocity = bouncing_speed(mass_1, mass_2, molecule_velocity, other_molecule_velocity, molecule_position, other_molecule_position)
-                            self.molecules[i].set_velocity(new_velocity[0])
-                            self.molecules[j].set_velocity(new_velocity[1])
-                            break
