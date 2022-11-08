@@ -9,8 +9,8 @@ class Molecule:
     # Class variables theta, velocity, shape, index
     def __init__(self, fScreen, fIndex, mass):
         x_size, y_size = fScreen.get_size()
-        x = rnd.randrange(1 + mass, x_size - mass)
-        y = rnd.randrange(1 + mass, y_size - mass)
+        self.x = rnd.randrange(1 + mass, x_size - mass)
+        self.y = rnd.randrange(1 + mass, y_size - mass)
 
         self.mass_partice = mass
         # Generator of the velocity of the particles, all with different direction,
@@ -21,7 +21,7 @@ class Molecule:
 
         self.velocity = [vx, vy]
 
-        self.shape = pg.rect.Rect(x,y, self.mass_partice, self.mass_partice)
+        self.shape = pg.rect.Rect(self.x,self.y, self.mass_partice, self.mass_partice)
         self.index = fIndex
 
     # Getter Methods
@@ -33,6 +33,14 @@ class Molecule:
         return self.velocity[1]
     def get_mass(self):
         return self.mass_partice
+    def get_id(self):
+        return self.index
+    def get_x(self):
+        return self.x
+    def get_y(self):
+        return self.y
+    def get_position(self):
+        return [self.x,self.y]
 
     # Setter Methods
     def set_velocity(self, new_v):
@@ -42,6 +50,8 @@ class Molecule:
         self.velocity[0] = new_vx
     def set_yvelocity(self, new_vy):
         self.velocity[1] = new_vy
+    def set_id(self, new_id):
+        self.index = new_id
 
     #Draw a Particle
     def draw_a_particle(self, fScreen):
@@ -60,16 +70,20 @@ class Molecule:
         if y<0+self.mass_partice or y>y_size-self.mass_partice:
             self.velocity[1] = -self.velocity[1]
 
-
 class Molecules:
     # Class variables number_of_molecules, mass, molecules
-    def __init__(self, N, fScreen, mass):
+    def __init__(self, N, fScreen, mass, mass_body, body_position):
         self.number_of_molecules = N
         self.mass = mass
         self.molecules = []
-        for i in range(self.number_of_molecules):
-            molecule = Molecule(fScreen, i, self.mass)
-            self.molecules.append(molecule)
+        i = 0
+        while i<N:
+            new_molecule = Molecule(fScreen, i, self.mass)
+            if new_molecule.get_x() < body_position[0]-mass_body or new_molecule.get_x() > body_position[0]+mass_body:
+                if new_molecule.get_y() < body_position[1]-mass_body or new_molecule.get_y() > body_position[1]+mass_body:
+                    self.molecules.append(new_molecule)
+                    i += 1
+                    print(i)
 
     #Molecules Functions
 
@@ -79,14 +93,10 @@ class Molecules:
         for i in range(self.number_of_molecules):
             pg.draw.circle(fScreen, (255, 255, 255), self.molecules[i].shape.center, self.mass)
     def move_particles(self, fScreen):
-        # mass_1 = self.mass
-        # mass_2 = mass_1
-        # radius2 = self.mass * self.mass
-        # N = self.number_of_molecules
 
         for i in range(self.number_of_molecules):
             v = self.molecules[i].get_velocity()
-            self.molecules[i].shape = self.molecules[i].shape.move(10*v[0], 10*v[1])
+            self.molecules[i].shape = self.molecules[i].shape.move(5*v[0], 5*v[1])
 
             x_size, y_size = fScreen.get_size()
 
@@ -98,17 +108,3 @@ class Molecules:
                 self.molecules[i].set_xvelocity(-self.molecules[i].get_xvelocity())
             if y<0+self.mass or y>y_size-self.mass:
                 self.molecules[i].set_yvelocity(-self.molecules[i].get_yvelocity())
-
-            #Bouncing against each other
-
-            # molecule_position = self.molecules[i].shape.center
-            # molecule_velocity = self.molecules[i].get_velocity()
-            # for j in range(N):
-            #     if i != j:
-            #         other_molecule_position = self.molecules[j].shape.center
-            #         other_molecule_velocity = self.molecules[j].get_velocity()
-            #         distance2 = (molecule_position[0] - other_molecule_position[0])*(molecule_position[0] - other_molecule_position[0]) + (molecule_position[1] - other_molecule_position[1])*(molecule_position[1] - other_molecule_position[1])
-            #         if distance2 < 4*radius2:
-            #
-            #             self.molecules[i].set_velocity([-self.molecules[i].get_xvelocity(), -self.molecules[i].get_yvelocity()])
-            #             self.molecules[j].set_velocity([-self.molecules[j].get_xvelocity(), -self.molecules[j].get_yvelocity()])
